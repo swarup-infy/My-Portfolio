@@ -20,9 +20,10 @@
 </p>
 
 <p align="center">
-  🌐 <a href="https://ashimroy.com">ashimroy.com</a>
+  🌐 <a href="https://ashimroy-portfolio.vercel.app">
+    ashimroy-portfolio.vercel.app
+  </a>
 </p>
-
 
 
 ## 🚀 Overview
