@@ -1,0 +1,86 @@
+#contact {
+  margin: auto;
+  max-width: 1000px;
+  padding: 80px 0;
+}
+
+
+
+.contact-card {
+  background: var(--light-navy);
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 700px;
+  border: 1px solid rgba(100, 255, 218, 0.08);
+  transition: all 0.25s ease;
+}
+
+.contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.contact-card h2 {
+  font-family: "NTR", sans-serif;
+  color: var(--lightest-slate);
+  font-size: 38px;
+  margin-bottom: 16px;
+}
+
+.contact-description {
+  font-family: "NTR", sans-serif;
+  color: var(--slate);
+  font-size: 18px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+
+.contact-button {
+  display: inline-block;
+  margin-top: 28px;
+  padding: 12px 24px;
+  border: 1px solid var(--green-bright);
+  border-radius: 6px;
+  color: var(--green-bright);
+  text-decoration: none;
+  font-family: "NTR", sans-serif;
+  font-size: 18px;
+  transition: all 0.25s ease;
+}
+
+.contact-button:hover {
+  background: rgba(100, 255, 218, 0.08);
+  color: var(--lightest-slate);
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.contact-links a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  color: var(--green-bright);
+  text-decoration: none;
+  font-family: "NTR", sans-serif;
+  width: fit-content;
+  font-size: 20px;
+
+  transition: all 0.2s ease;
+}
+
+.contact-links a:hover {
+  color: var(--lightest-slate);
+  transform: translateX(4px);
+}
+
+.contact-links a svg {
+  font-size: 22px;
+}
+
+
