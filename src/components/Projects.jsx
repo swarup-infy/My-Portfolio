@@ -6,21 +6,21 @@ import { Carousel } from "react-bootstrap";
 import ExternalLinks from "./ExternalLinks";
 
 const spotlightProjects = {
-  "Journal Management Platform": {
-    title: "journal management platform",
-    desc: "Secure backend journaling application built using Spring Boot and MongoDB. Implemented authentication, authorization, role-based access control, transaction management, and user-specific journal ownership with a layered architecture.",
-    techStack:
-      "Java, Spring Boot, Spring Security, MongoDB, REST APIs",
-    link: "https://github.com/ashim-roy/JournalApp",
-    image: "/assets/journalApp.png",
-  },
+    "LinkedIn Clone": {
+      title: "linkedin clone — distributed backend platform",
+      desc: "Backend-focused professional networking platform inspired by LinkedIn, designed with Java and Spring Boot microservices. Implements core identity, networking, content, and distributed service workflows with a focus on scalability, resilience, and clean service boundaries.",
+      techStack:
+        "Java, Spring Boot, Spring Security, REST APIs, gRPC, PostgreSQL, Redis, Kafka, Kubernetes",
+      link: "https://github.com/ashim-roy/linkedin-clone-backend",
+      image: "/assets/linkedin-clone.png",
+    },
 
-  "E-Commerce Platform": {
+    "E-Commerce Platform": {
     title: "microservices architecture",
     desc: "Production-style e-commerce application implementing user authentication, product catalogs, shopping carts, order management, and RESTful APIs. Designed using scalable backend architecture with caching, database integration, and real-world deployment practices.",
     techStack:
       "Java, Spring Boot, MySQL, Redis, REST APIs",
-    link: "https://github.com/ashim-roy/ProductServiceSpring",
+    link: "https://github.com/ashim-roy/Ecommerce-engine",
     image: "/assets/E-Commerce.png",
   },
 
@@ -31,6 +31,15 @@ const spotlightProjects = {
       "Java, Spring Boot, Kafka, Elasticsearch, Kibana, OpenTelemetry",
     link: "https://github.com/ashim-roy/Distributed-Logging-Monitoring-Platform",
     image: "/assets/Logging-Monitoring.png",
+  },
+
+  "Journal Management Platform": {
+    title: "journal management platform",
+    desc: "Secure backend journaling application built using Spring Boot and MongoDB. Implemented authentication, authorization, role-based access control, transaction management, and user-specific journal ownership with a layered architecture.",
+    techStack:
+      "Java, Spring Boot, Spring Security, MongoDB, REST APIs",
+    link: "https://github.com/ashim-roy/JournalApp",
+    image: "/assets/journalApp.png",
   },
 
   "Quarkus Clean Architecture API": {
