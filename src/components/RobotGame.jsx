@@ -20,7 +20,7 @@ const ROBOT_HEIGHT = 72;
 const CELL_COUNT = 5;
 const LEVEL_HEIGHT = 5200;
 
-const ROBOT_VISUAL_OFFSET_Y = 8;
+const ROBOT_VISUAL_OFFSET_Y = 2;
 
 const RobotGame = ({ active }) => {
   const canvasRef = useRef(null);
