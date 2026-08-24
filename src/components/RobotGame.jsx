@@ -655,31 +655,19 @@ const RobotGame = ({ active }) => {
       ) {
         event.preventDefault();
       }
-
-      if (
-        gameStatus === "dead" &&
-        event.code === "Space"
-      ) {
-        restart();
-        return;
-      }
-
-      keysRef.current.add(
-        event.code
-      );
+    
+      keysRef.current.add(event.code);
     };
-
+    
     const handleKeyUp = (event) => {
-      keysRef.current.delete(
-        event.code
-      );
+      keysRef.current.delete(event.code);
     };
-
+    
     window.addEventListener(
       "keydown",
       handleKeyDown
     );
-
+    
     window.addEventListener(
       "keyup",
       handleKeyUp
