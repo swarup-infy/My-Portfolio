@@ -1,32 +1,54 @@
 .sidebar-nav {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
   position: fixed;
-  background-color: transparent;
-  margin: auto;
-  width: 50%;
-  justify-content: space-between;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 1200px;
+
+  padding: 18px 30px;
+
+  background: transparent;
+
+  z-index: 1000;
+
+  box-sizing: border-box;
 }
 
 .sidebar-links {
   display: flex;
-  flex-direction: row;
-  margin: auto;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+
+  gap: 28px;
+
+  width: auto;
+  margin: 0;
+
   text-align: center;
-  width: 50%;
+
   font-family: "NTR", sans-serif;
-  letter-spacing: 0em;
-  line-height: 1.6em;
   font-size: 16px;
-  padding: 0.2em;
   font-weight: bold;
+
+  letter-spacing: 0;
+  line-height: 1.6;
+
+  padding: 0.2em;
 }
 
 a {
   text-decoration: none;
   color: var(--green-bright);
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 a:hover {
@@ -43,6 +65,7 @@ a:hover .nav-slash {
 
 img {
   height: 18px;
+  width: auto;
 }
 
 @media only screen and (max-width: 800px) {
