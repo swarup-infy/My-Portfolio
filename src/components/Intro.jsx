@@ -11,12 +11,13 @@ const Intro = () => {
       <div className="intro-simulation">
         <AsciiPortrait />
       </div>
+
       <div className="intro-block">
         <div className="intro-title">
           {"hi, "}
           <span className="intro-name">
             <TypeAnimation
-              sequence={["ashim"]}
+              sequence={["Swarup"]}
               wrapper="span"
               cursor={false}
               repeat={0}
@@ -25,25 +26,31 @@ const Intro = () => {
           {" here."}
           <span className="intro-cursor">|</span>
         </div>
+
         <FadeInSection>
           <div className="intro-role">
-            Senior Software Engineer @ LinkedIn
+            Backend Developer | Python & Java | AI/ML Enthusiast
           </div>
 
           <div className="intro-desc">
-            Building scalable backend platforms, distributed systems, and
-            APIs using Java, Spring Boot, Kafka, AWS, and Microservices.
-
-            Currently exploring AI infrastructure, LLM platforms,
-            RAG, vector databases, agentic systems, and cloud-native
-            platform engineering.
-
-            Passionate about system design, performance optimization, and
-            engineering reliable software at scale.
+            Building practical web applications and backend systems using
+            Python, Java, FastAPI, React, and PostgreSQL.
+            <br />
+            <br />
+            Currently exploring Machine Learning, NLP, LLMs, Gen AI RAG,
+            vector databases, and AI-powered applications.
+            <br />
+            <br />
+            Passionate about learning through real-world projects and
+            building reliable, useful software.
           </div>
-          <a href="mailto:hi.ashimroy@gmail.com" className="intro-contact">
+
+          <a
+            href="mailto:officially.swarup@gmail.com"
+            className="intro-contact"
+          >
             <EmailRoundedIcon />
-            {" Say hi!"}
+            {" Say hiii!"}
           </a>
         </FadeInSection>
       </div>
