@@ -19,11 +19,16 @@ const NavBar = () => {
       document.body.style.width = "100%";
     } else {
       const scrollY = document.body.style.top;
+
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.width = "";
+
       if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || "0") * -1);
+        window.scrollTo(
+          0,
+          parseInt(scrollY || "0", 10) * -1
+        );
       }
     }
   }, [expanded]);
@@ -38,34 +43,49 @@ const NavBar = () => {
       onToggle={(isExpanded) => setExpanded(isExpanded)}
     >
       <Container>
-        <Navbar.Brand href="/#intro">Ashim Roy</Navbar.Brand>
+        <Navbar.Brand href="/#intro">
+          Swarup Kar Chaudhuri
+        </Navbar.Brand>
+
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
+
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto" onSelect={() => setExpanded(false)}>
+          <Nav
+            className="me-auto"
+            onSelect={() => setExpanded(false)}
+          >
             <Nav.Link href="/#intro">Home</Nav.Link>
             <Nav.Link href="/#about">About</Nav.Link>
-            <Nav.Link href="/#experience">Experience</Nav.Link>
+            <Nav.Link href="/#experience">
+              Experience
+            </Nav.Link>
             <Nav.Link href="/#projects">Projects</Nav.Link>
             <Nav.Link href="/#blogs">Blogs</Nav.Link>
             <Nav.Link href="/#contact">Contact</Nav.Link>
           </Nav>
-          <Nav className="ms-auto" onSelect={() => setExpanded(false)}>
-            <Nav.Link 
-                href="mailto:hi.ashimroy@gmail.com"
-                aria-label="Email"
-                >
+
+          <Nav
+            className="ms-auto"
+            onSelect={() => setExpanded(false)}
+          >
+            <Nav.Link
+              href="mailto:officially.swarup@gmail.com"
+              aria-label="Email"
+            >
               <EmailRoundedIcon style={{ fontSize: 20 }} />
             </Nav.Link>
+
             <Nav.Link
-                  href="https://github.com/ashim-roy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                >
+              href="https://github.com/swarup-infy"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+            >
               <GitHubIcon style={{ fontSize: 19 }} />
             </Nav.Link>
+
             <Nav.Link
-              href="https://leetcode.com/u/Ashim_Roy/"
+              href="https://leetcode.com/u/swarup_infy/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LeetCode"
@@ -76,24 +96,26 @@ const NavBar = () => {
                 style={{
                   width: "20px",
                   height: "20px",
-                  filter: "brightness(0) invert(1)"
+                  filter: "brightness(0) invert(1)",
                 }}
               />
             </Nav.Link>
+
             <Nav.Link
-              href="https://www.linkedin.com/in/ashim-roy/"
+              href="https://www.linkedin.com/in/swarup-kar-chaudhuri-4266a7260"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
             >
               <LinkedInIcon style={{ fontSize: 21 }} />
             </Nav.Link>
-            <Nav.Link 
-                href="/resume.pdf" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                aria-label="Resume"
-                >
+
+            <Nav.Link
+              href="/resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Resume"
+            >
               <DescriptionIcon style={{ fontSize: 20 }} />
             </Nav.Link>
           </Nav>

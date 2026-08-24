@@ -1,73 +1,83 @@
 <h1 align="center">
-  Ashim Roy 
+
+  Swarup Kar Chaudhuri
+
 </h1>
 
 <p align="center">
-  Senior Software Engineer • Distributed Systems • Microservices • Java • Spring Boot • Kafka • AWS • AI Platforms
+
+  Backend Developer • Python • Java • FastAPI • React • AI/ML • RAG • LLM Applications
+
 </p>
 
 <p align="center">
-  Personal portfolio website built with Vite, React 19, Material UI v6, and Bootstrap 5.
+
+  Personal portfolio website built with Vite, React 19, Material UI, and Bootstrap 5.
+
 </p>
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/ashim-roy/">LinkedIn</a> •
-  <a href="https://github.com/ashim-roy">GitHub</a>
+
+  <a href="https://www.linkedin.com/in/swarup-kar-chaudhuri-4266a7260">LinkedIn</a> •
+  <a href="https://github.com/swarup-infy">GitHub</a> •
+  <a href="https://leetcode.com/u/swarup_infy/">LeetCode</a> •
+  <a href="https://medium.com/@officially.swarup">Medium</a>
+
 </p>
 
 <p align="center">
-  <img src="src/assets/readme-preview.png" width="100%" alt="Ashim Roy Portfolio"/>
+
+  <img src="src/assets/readme-preview.png" width="100%" alt="Swarup Kar Chaudhuri Portfolio"/>
+
 </p>
 
 <p align="center">
-  🌐 <a href="https://ashimroy-portfolio.vercel.app">
-    ashimroy-portfolio.vercel.app
+
+  🌐 <a href="https://ai-doc-assistant-nu.vercel.app/login">
+
+    AI Document Assistant
+
   </a>
+
 </p>
+
 
 
 ## 🚀 Overview
 
-This repository contains the source code for my personal portfolio website. It showcases my experience, projects, technical writing, and interests in backend engineering, distributed systems, cloud-native platforms, and AI-powered applications.
+This repository contains the source code for my personal portfolio website. It showcases my education, projects, technical skills, interests, and journey in software development, backend engineering, web technologies, and artificial intelligence.
+
+I am a B.Tech Electrical Engineering graduate from North Eastern Regional Institute of Science and Technology. Although my academic background is in Electrical Engineering, I have developed a strong interest in software development and enjoy building practical applications using Python, Java, backend technologies, and AI.
 
 ### Highlights
 
-* 10+ years of software engineering experience
-* Senior Software Engineer at LinkedIn
-* Distributed Systems & Microservices
-* Java, Spring Boot, Kafka & AWS
-* AI Platforms, RAG, MCP & Agentic Systems
-* System Design & Technical Leadership
+* B.Tech in Electrical Engineering — 2026
+
+* North Eastern Regional Institute of Science and Technology
+
+* Backend Development
+
+* Python & Java
+
+* FastAPI & REST APIs
+
+* React & Web Development
+
+* PostgreSQL & SQLAlchemy
+
+* Artificial Intelligence & Machine Learning
+
+* NLP, LLMs & RAG Systems
+
+* Vector Databases & AI Agents
+
+* Enterprise AI Applications
 
 
 
-## 🛠 set-up
+## 🛠 Setup
 
 1. Install the dependencies
 
    ```sh
    npm install
-   ```
-
-2. Start the development server
-
-   ```sh
-   npm run dev
-   ```
-
-## 🚀 Build for Production
-
-1. Generate a full static production build
-
-   ```sh
-   npm run build
-   ```
-
-
-## 🏗 Tech Stack
-
-- React 19
-- Vite
-- Material UI
-- Bootstrap 5
-- React Router

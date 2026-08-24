@@ -7,7 +7,7 @@ const Credits = () => {
     <FadeInSection>
       <div id="credits">
         <div className="ending-credits">
-          <div>Designed & developed by Ashim Roy. </div>
+          <div>Designed & developed by Swarup Kar Chaudhuri.</div>
           <div>All rights reserved. ©</div>
         </div>
       </div>
