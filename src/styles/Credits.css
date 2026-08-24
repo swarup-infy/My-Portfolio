@@ -1,14 +1,85 @@
 #credits {
   display: flex;
   align-items: center;
-  padding-top: 60px;
+  justify-content: center;
+
+  padding-top: 70px;
+  padding-bottom: 20px;
 }
 
 .ending-credits {
-  font-family: "NTR", sans-serif;
-  color: var(--slate);
-  text-align: center;
+  position: relative;
+
   width: 100%;
+
+  padding: 28px 20px 40px;
+
+  font-family: "NTR", sans-serif;
   font-size: 16px;
-  padding-bottom: 40px;
+
+  color: var(--slate);
+
+  text-align: center;
+
+  border-top: 1px solid rgba(100, 255, 218, 0.08);
+
+  line-height: 1.7;
+
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.ending-credits::before {
+  content: "✦";
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: var(--green-bright);
+
+  font-size: 14px;
+
+  opacity: 0.7;
+}
+
+.ending-credits:hover {
+  color: var(--lightest-slate);
+
+  border-color: rgba(100, 255, 218, 0.18);
+}
+
+.ending-credits div:first-child {
+  color: var(--lightest-slate);
+}
+
+.ending-credits div:last-child {
+  margin-top: 4px;
+
+  font-size: 14px;
+
+  color: var(--slate);
+
+  opacity: 0.75;
+}
+
+/* ==============================
+   Mobile
+============================== */
+
+@media only screen and (max-width: 600px) {
+  #credits {
+    padding-top: 50px;
+  }
+
+  .ending-credits {
+    padding: 24px 15px 30px;
+
+    font-size: 15px;
+  }
+
+  .ending-credits div:last-child {
+    font-size: 13px;
+  }
 }
