@@ -5,34 +5,19 @@ import FadeInSection from "./FadeInSection";
 const Blogs = () => {
   const blogs = [
     {
-      title: "Service Discovery in Spring Boot Microservices",
-      desc: "How service discovery works in microservice architectures, why Eureka is needed, and how services dynamically find and communicate with each other.",
-      link: "https://medium.com/@ashim.roy120388/service-discovery-in-spring-boot-microservices-how-eureka-works-why-we-need-it-and-how-to-156feba7cf06",
+      title: "Backend Development",
+      desc: "Exploring backend development with Python, Java, REST APIs, databases, authentication, and practical software engineering.",
+      link: "https://medium.com/@officially.swarup",
     },
     {
-      title: "Redis Caching in Spring Boot",
-      desc: "From caching theory to a working product cache — exploring Redis, Spring Boot integration, cache configuration, and practical performance improvements.",
-      link: "https://medium.com/@ashim.roy120388/redis-caching-in-spring-boot-from-theory-to-a-working-product-cache-4662122aa7c3",
+      title: "Artificial Intelligence & Machine Learning",
+      desc: "Learning and exploring machine learning, NLP, LLMs, embeddings, and modern AI application development through practical projects.",
+      link: "https://medium.com/@officially.swarup",
     },
     {
-      title: "JPA Projection vs DTO in Spring Boot",
-      desc: "Understanding the difference between JPA Projections and DTOs, when to use each, and how they influence database access and API design.",
-      link: "https://medium.com/@ashim.roy120388/jpa-projection-vs-dto-in-spring-boot-whats-the-difference-and-when-should-you-use-each-3c8043e8b813",
-    },
-    {
-      title: "Building a Payment Service with Spring Boot & Stripe",
-      desc: "Designing a payment service from order creation to payment gateway integration, callbacks, webhooks, and reliable payment processing.",
-      link: "https://medium.com/@ashim.roy120388/building-a-payment-service-with-spring-boot-stripe-from-order-creation-to-webhooks-and-69656ff24fe7",
-    },
-    {
-      title: "From Hello World to Machine Code",
-      desc: "A journey through the JDK, JRE, JVM, bytecode, and JIT compiler to understand what really happens when Java code runs.",
-      link: "https://medium.com/@ashim.roy120388/from-hello-world-to-machine-code-understanding-jdk-jre-jvm-bytecode-jit-the-complete-java-01f33bbfa117",
-    },
-    {
-      title: "Building Pagination, Sorting & Filtering in Spring Boot",
-      desc: "Learn how to build production-ready pagination, sorting, and filtering APIs using Spring Boot and Spring Data JPA for efficient handling of large datasets.",
-      link: "YOUR_MEDIUM_ARTICLE_URL",
+      title: "RAG & AI Applications",
+      desc: "Exploring Retrieval-Augmented Generation, vector databases, semantic search, and building AI-powered applications.",
+      link: "https://medium.com/@officially.swarup",
     },
   ];
 
@@ -42,19 +27,20 @@ const Blogs = () => {
         <span className="section-title">/ blogs</span>
 
         <a
-          href="https://medium.com/@ashim.roy120388"
+          href="https://medium.com/@officially.swarup"
           target="_blank"
           rel="noopener noreferrer"
           className="explore-link"
         >
-          View all articles
+          Visit my Medium
         </a>
       </div>
 
       <FadeInSection delay="200ms">
         <div className="blogs-description">
-          Writing about Java, Spring Boot, distributed systems, backend
-          architecture, scalability, and practical software engineering.
+          Writing and learning about backend development, Python, Java,
+          artificial intelligence, machine learning, NLP, LLMs, and
+          practical software engineering.
         </div>
       </FadeInSection>
 
@@ -72,7 +58,7 @@ const Blogs = () => {
                 rel="noopener noreferrer"
                 className="project-badge"
               >
-                Read Article
+                Visit Medium
               </a>
             </div>
           </FadeInSection>
