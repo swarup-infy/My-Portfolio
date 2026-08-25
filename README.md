@@ -27,12 +27,13 @@
 
 <p align="center">
 
+<p align="center">
   <img
-    src="src/assets/readme-preview.png"
+    src="./src/assets/readme-preview.png"
     width="100%"
     alt="Swarup Kar Chaudhuri Portfolio"
   />
-
+</p>
 </p>
 
 <p align="center">
