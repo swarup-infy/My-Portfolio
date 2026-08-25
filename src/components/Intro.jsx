@@ -15,6 +15,7 @@ const Intro = () => {
       <div className="intro-block">
         <div className="intro-title">
           {"hi, "}
+
           <span className="intro-name">
             <TypeAnimation
               sequence={["Swarup"]}
@@ -23,7 +24,9 @@ const Intro = () => {
               repeat={0}
             />
           </span>
+
           {" here."}
+
           <span className="intro-cursor">|</span>
         </div>
 

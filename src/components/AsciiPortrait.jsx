@@ -1,572 +1,344 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-// Module-level cache to persist between remounts
-const memoryCache = {};
+/* ============================================================
+   SWARUP — DENSE ASCII PORTRAIT (classic brightness-ramp style)
+============================================================ */
 
-const calculateSize = (width) => {
-  if (width <= 480) {
-    return Math.min(220, width - 40);
-  }
+const IMAGE_SRC = "/profile-code-swarup.png";
+const cache = new Map();
 
-  if (width <= 768) {
-    return Math.min(280, width - 60);
-  }
+const getSize = (vw) => {
+  if (vw <= 480) return { width: 300, height: 470 };
+  if (vw <= 768) return { width: 340, height: 520 };
+  return { width: 420, height: 620 };
+};
 
-  return 400;
+/* Classic dark→light ASCII ramp. Index 0 = emptiest (dark source),
+   last index = densest glyph (bright source). This is the key fix:
+   ONE ramp, driven by brightness, not two disjoint symbol sets. */
+const RAMP =
+  " .'`^,:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW%B@$";
+
+const luminance = (r, g, b) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+const clamp = (v, min = 0, max = 1) => Math.max(min, Math.min(max, v));
+
+const getChar = (brightness) => {
+  // gamma lift so mid/dark tones still read as visible glyphs
+  const v = clamp(Math.pow(clamp(brightness), 0.72));
+  const i = Math.floor(v * (RAMP.length - 1));
+  return RAMP[Math.max(0, Math.min(RAMP.length - 1, i))];
 };
 
 const AsciiPortrait = () => {
   const canvasRef = useRef(null);
-
-  const mouseRef = useRef({
-    x: -1000,
-    y: -1000,
-    active: false,
-  });
-
-  const mouseTargetRef = useRef({
-    x: -1000,
-    y: -1000,
-  });
-
   const particlesRef = useRef([]);
-  const startTimeRef = useRef(null);
+  const mouseRef = useRef({ x: -9999, y: -9999, active: false });
+  const mouseTargetRef = useRef({ x: -9999, y: -9999 });
+  const startTimeRef = useRef(0);
 
-  const [size, setSize] = useState(() =>
-    calculateSize(window.innerWidth)
-  );
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
+  const [ready, setReady] = useState(false);
 
-  const [dataReady, setDataReady] = useState(false);
-
-  // ASCII characters from light to dense
-  const chars = " .:-=+*#%@".split("");
-
-  // --------------------------------------------------
-  // Handle responsive size
-  // --------------------------------------------------
+  /* -------------------- resize -------------------- */
   useEffect(() => {
-    const updateSize = () => {
-      setSize(calculateSize(window.innerWidth));
+    let t = null;
+    const onResize = () => {
+      if (t) clearTimeout(t);
+      t = setTimeout(() => setViewportWidth(window.innerWidth), 120);
     };
-
-    window.addEventListener("resize", updateSize);
-
+    window.addEventListener("resize", onResize);
     return () => {
-      window.removeEventListener("resize", updateSize);
+      if (t) clearTimeout(t);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
-  // --------------------------------------------------
-  // Create animated particles
-  // --------------------------------------------------
-  const createParticlesFromRaw = (rawParticles, isMobileSize) => {
-    const fontSize = isMobileSize ? 5 : 7;
+  /* -------------------- image → particles -------------------- */
+  const convertImage = (image, width, height) => {
+    const off = document.createElement("canvas");
+    off.width = width;
+    off.height = height;
+    // NOTE: this offscreen canvas is only used to SAMPLE brightness/color
+    // for the ASCII glyphs — it never touches the visible canvas, so its
+    // black fill has no effect on the transparent background.
+    const ctx = off.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return [];
 
-    return rawParticles.map((particle) => ({
-      x: particle.x + (Math.random() - 0.5) * 400,
-      y: particle.y + (Math.random() - 0.5) * 400,
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, width, height);
 
-      targetX: particle.x,
-      targetY: particle.y,
-
-      vx: 0,
-      vy: 0,
-
-      char: particle.char,
-      fontSize,
-
-      baseAlpha: particle.alpha,
-      currentAlpha: 0,
-
-      delay: Math.random() * 0.4,
-      shimmer: Math.random() * Math.PI * 2,
-    }));
-  };
-
-  // --------------------------------------------------
-  // Convert Swarup's image into ASCII particles
-  // --------------------------------------------------
-  const processImage = (img, targetSize) => {
-    const canvasWidth = targetSize;
-    const canvasHeight = targetSize;
-
-    const offscreen = document.createElement("canvas");
-
-    offscreen.width = canvasWidth;
-    offscreen.height = canvasHeight;
-
-    const offCtx = offscreen.getContext("2d");
-
-    if (!offCtx) {
-      return [];
+    const imgRatio = image.width / image.height;
+    const canvasRatio = width / height;
+    let drawW, drawH;
+    if (imgRatio > canvasRatio) {
+      drawW = width * 0.98;
+      drawH = drawW / imgRatio;
+    } else {
+      drawH = height * 0.98;
+      drawW = drawH * imgRatio;
     }
+    const offsetX = (width - drawW) / 2;
+    const offsetY = (height - drawH) / 2;
+    ctx.drawImage(image, offsetX, offsetY, drawW, drawH);
 
-    // Transparent background
-    offCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+    const { data } = ctx.getImageData(0, 0, width, height);
 
-    const scale = 0.8;
+    // Fine grid — higher density than before, tuned to a monospace
+    // cell aspect ratio at the font size we render with (6px).
+    const cellW = 3.2;
+    const cellH = 5.4;
 
-    const imgAspect = img.width / img.height;
-
-    let drawHeight = canvasHeight * scale;
-    let drawWidth = drawHeight * imgAspect;
-
-    if (drawWidth > canvasWidth * scale) {
-      drawWidth = canvasWidth * scale;
-      drawHeight = drawWidth / imgAspect;
-    }
-
-    const offsetX = (canvasWidth - drawWidth) / 2;
-    const offsetY = (canvasHeight - drawHeight) / 2;
-
-    offCtx.drawImage(
-      img,
-      offsetX,
-      offsetY,
-      drawWidth,
-      drawHeight
-    );
-
-    const imageData = offCtx.getImageData(
-      0,
-      0,
-      canvasWidth,
-      canvasHeight
-    );
-
-    const pixels = imageData.data;
-
-    const rawParticles = [];
-
-    const isMobileSize = targetSize <= 280;
-
-    const fontSize = isMobileSize ? 5 : 7;
-
-    const colGap = fontSize * 0.7;
-    const rowGap = fontSize * 1.1;
-
-    for (let y = 0; y < canvasHeight; y += rowGap) {
-      for (let x = 0; x < canvasWidth; x += colGap) {
-        const pixelX = Math.floor(x);
-        const pixelY = Math.floor(y);
-
-        const index =
-          (pixelY * canvasWidth + pixelX) * 4;
-
-        const r = pixels[index];
-        const g = pixels[index + 1];
-        const b = pixels[index + 2];
-        const alpha = pixels[index + 3];
-
-        // Ignore transparent pixels
-        if (alpha < 80) {
-          continue;
+    const sampleCell = (sx, sy) => {
+      const ex = Math.min(width, Math.ceil(sx + cellW));
+      const ey = Math.min(height, Math.ceil(sy + cellH));
+      let r = 0, g = 0, b = 0, count = 0;
+      for (let y = Math.floor(sy); y < ey; y++) {
+        for (let x = Math.floor(sx); x < ex; x++) {
+          const i = (y * width + x) * 4;
+          r += data[i];
+          g += data[i + 1];
+          b += data[i + 2];
+          count++;
         }
+      }
+      if (!count) return { r: 0, g: 0, b: 0, brightness: 0 };
+      r /= count; g /= count; b /= count;
+      return { r, g, b, brightness: luminance(r, g, b) };
+    };
 
-        const brightness =
-          (r + g + b) / (3 * 255);
+    const particles = [];
+    for (let y = 0; y < height; y += cellH) {
+      for (let x = 0; x < width; x += cellW) {
+        const { r, g, b, brightness } = sampleCell(x, y);
 
-        const charIndex = Math.floor(
-          brightness * (chars.length - 1)
-        );
+        // Skip only genuinely black/empty cells — everything else
+        // gets rendered, so the frame reads as a filled photograph.
+        if (brightness < 0.015) continue;
 
-        rawParticles.push({
-          x: Number(x.toFixed(1)),
-          y: Number(y.toFixed(1)),
-          char: chars[charIndex],
-          alpha: Number(
-            (0.4 + brightness * 0.6).toFixed(2)
-          ),
+        const character = getChar(brightness);
+
+        // --- Color: desaturate toward gray + cool tint so glyphs
+        // blend into a dark navy background instead of reading as a
+        // literal skin-tone blob. Then lift shadows so dark areas
+        // (outline, hairline, jaw) stay clearly visible instead of
+        // fading to near-black.
+        const gray = brightness * 255;
+        const desat = 0.55; // 0 = full color, 1 = full grayscale
+        const dr = r * (1 - desat) + gray * desat;
+        const dg = g * (1 - desat) + gray * desat;
+        const db = b * (1 - desat) + gray * desat;
+
+        const boost = 0.8 + brightness * 0.35;
+        const shadowLift = 70; // raises dark cells so outline reads clearly
+        const cr = Math.min(255, dr * boost + shadowLift * 0.9);
+        const cg = Math.min(255, dg * boost + shadowLift * 0.95);
+        const cb = Math.min(255, db * boost + shadowLift * 1.15); // slight cool/blue push
+
+        // Higher alpha floor so shadow glyphs don't disappear against
+        // a transparent/dark page background.
+        const alpha = clamp(0.55 + brightness * 0.45, 0.45, 1);
+
+        particles.push({
+          targetX: x,
+          targetY: y,
+          x: x + (Math.random() - 0.5) * 200,
+          y: y + (Math.random() - 0.5) * 260,
+          vx: 0,
+          vy: 0,
+          character,
+          color: `${Math.round(cr)},${Math.round(cg)},${Math.round(cb)}`,
+          alpha,
+          currentAlpha: 0,
+          delay: Math.random() * 0.35,
+          phase: Math.random() * Math.PI * 2,
         });
       }
     }
-
-    return rawParticles;
+    return particles;
   };
 
-  // --------------------------------------------------
-  // Load Swarup's actual profile image
-  // --------------------------------------------------
+  /* -------------------- load image -------------------- */
   useEffect(() => {
-    const isMobileSize = size <= 280;
+    const { width, height } = getSize(viewportWidth);
+    const key = `${IMAGE_SRC}-${width}-${height}`;
+    setReady(false);
 
-    // Use cached processed image if available
-    if (memoryCache[size]) {
-      particlesRef.current = createParticlesFromRaw(
-        memoryCache[size],
-        isMobileSize
-      );
+    const seed = (particles) =>
+      particles.map((p) => ({
+        ...p,
+        x: p.targetX + (Math.random() - 0.5) * 200,
+        y: p.targetY + (Math.random() - 0.5) * 260,
+        vx: 0,
+        vy: 0,
+        currentAlpha: 0,
+        delay: Math.random() * 0.35,
+      }));
 
-      setDataReady(true);
-
+    if (cache.has(key)) {
+      particlesRef.current = seed(cache.get(key));
       startTimeRef.current = performance.now();
-
+      setReady(true);
       return;
     }
 
-    const img = new Image();
-
-    img.onload = () => {
-      const rawParticles = processImage(img, size);
-
-      memoryCache[size] = rawParticles;
-
-      particlesRef.current = createParticlesFromRaw(
-        rawParticles,
-        isMobileSize
-      );
-
-      setDataReady(true);
-
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => {
+      const particles = convertImage(image, width, height);
+      cache.set(key, particles);
+      particlesRef.current = seed(particles);
       startTimeRef.current = performance.now();
+      setReady(true);
     };
-
-    img.onerror = () => {
-      console.error(
-        "Failed to load profile image:",
-        "/profile-code-swarup.png"
-      );
-
-      setDataReady(false);
+    image.onerror = () => {
+      console.error("Unable to load:", IMAGE_SRC);
+      setReady(false);
     };
+    image.src = IMAGE_SRC;
+  }, [viewportWidth]);
 
-    // IMPORTANT:
-    // This is your actual uploaded Swarup image.
-    img.src = "/profile-code-swarup.png";
-  }, [size]);
-
-  // --------------------------------------------------
-  // Canvas animation
-  // --------------------------------------------------
+  /* -------------------- canvas + animation -------------------- */
   useEffect(() => {
     const canvas = canvasRef.current;
-
-    if (!canvas) {
-      return;
-    }
-
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    if (!ctx) {
-      return;
-    }
-
-    const dpr = window.devicePixelRatio || 1;
-
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
-
+    const { width, height } = getSize(viewportWidth);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = false;
 
-    let animationId;
+    let frameId;
 
-    const draw = () => {
-      animationId = requestAnimationFrame(draw);
+    const render = () => {
+      frameId = requestAnimationFrame(render);
 
-      ctx.clearRect(0, 0, size, size);
+      // Transparent backdrop — no solid fill, so the page background
+      // shows through around and between the glyphs.
+      ctx.clearRect(0, 0, width, height);
 
-      if (
-        !dataReady ||
-        !particlesRef.current.length ||
-        !startTimeRef.current
-      ) {
-        return;
-      }
+      if (!ready || !particlesRef.current.length) return;
 
+      const elapsed = (performance.now() - startTimeRef.current) / 1000;
       const particles = particlesRef.current;
 
       const mouse = mouseRef.current;
-      const mouseTarget = mouseTargetRef.current;
+      const target = mouseTargetRef.current;
+      // Smoother follow: slightly slower lerp so the brush glides
+      // instead of snapping to the raw cursor position.
+      mouse.x += (target.x - mouse.x) * 0.09;
+      mouse.y += (target.y - mouse.y) * 0.09;
 
-      const elapsed =
-        (performance.now() - startTimeRef.current) / 1000;
-
-      // Smooth mouse movement
-      mouse.x +=
-        (mouseTarget.x - mouse.x) * 0.15;
-
-      mouse.y +=
-        (mouseTarget.y - mouse.y) * 0.15;
-
-      const isMobileSize = size <= 280;
-
-      const fontSize = isMobileSize ? 5 : 7;
-
-      ctx.font = `${fontSize}px monospace`;
+      ctx.font = "6px monospace";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
 
-      particles.forEach((particle) => {
-        const particleTime =
-          elapsed - particle.delay;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const age = elapsed - p.delay;
+        if (age < 0) continue;
 
-        if (particleTime < 0) {
-          return;
-        }
+        const progress = Math.min(age / 2.0, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
 
-        // Fade-in animation
-        const fadeProgress = Math.min(
-          particleTime / 1.5,
-          1
-        );
-
-        const easedFade =
-          1 - Math.pow(1 - fadeProgress, 2);
-
-        const isActive =
-          mouse.active || particleTime < 3;
-
-        // Subtle shimmer
-        const shimmerValue = isActive
-          ? Math.sin(
-              elapsed * 2 +
-                particle.shimmer
-            ) * 0.1
-          : 0;
-
-        particle.currentAlpha = Math.max(
-          0,
-          particle.baseAlpha * easedFade +
-            shimmerValue
-        );
-
-        // Formation animation
-        const moveProgress = Math.min(
-          particleTime / 2.5,
-          1
-        );
-
-        const easedMove =
-          1 -
-          Math.pow(
-            1 - moveProgress,
-            3
-          );
-
-        // Mouse interaction
         if (mouse.active) {
-          const dx =
-            particle.x - mouse.x;
-
-          const dy =
-            particle.y - mouse.y;
-
-          const distance = Math.sqrt(
-            dx * dx + dy * dy
-          );
-
-          const maxDistance =
-            size * 0.2;
-
-          if (
-            distance < maxDistance &&
-            distance > 0
-          ) {
-            const force =
-              (1 -
-                distance /
-                  maxDistance) *
-              4;
-
-            particle.vx +=
-              (dx / distance) * force;
-
-            particle.vy +=
-              (dy / distance) * force;
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const radius = 260; // even bigger brush area
+          if (dist > 0 && dist < radius) {
+            // Smooth (quadratic) falloff instead of linear — glyphs
+            // near the center push more, edges taper off gently
+            // instead of cutting off sharply.
+            const t = 1 - dist / radius;
+            const force = t * t * 0.95;
+            p.vx += (dx / dist) * force;
+            p.vy += (dy / dist) * force;
           }
         }
 
-        // Pull particles toward their target
-        const dx =
-          particle.targetX -
-          particle.x;
+        const dx = p.targetX - p.x;
+        const dy = p.targetY - p.y;
+        const spring = 0.008 + ease * 0.06;
+        p.vx += dx * spring;
+        p.vy += dy * spring;
 
-        const dy =
-          particle.targetY -
-          particle.y;
+        p.vx += Math.sin(elapsed * 0.5 + p.phase) * 0.006;
+        p.vy += Math.cos(elapsed * 0.45 + p.phase) * 0.006;
 
-        const pullStrength =
-          0.01 +
-          easedMove * 0.08;
+        p.vx *= 0.92;
+        p.vy *= 0.92;
+        p.x += p.vx;
+        p.y += p.vy;
 
-        particle.vx +=
-          dx * pullStrength;
+        const fade = Math.min(age / 1.1, 1);
+        const fadeEase = 1 - Math.pow(1 - fade, 2);
+        p.currentAlpha = Math.max(0, p.alpha * fadeEase);
 
-        particle.vy +=
-          dy * pullStrength;
-
-        if (isActive) {
-          const breathX =
-            Math.sin(
-              elapsed * 0.5 +
-                particle.targetY *
-                  0.1
-            ) * 0.15;
-
-          const breathY =
-            Math.cos(
-              elapsed * 0.5 +
-                particle.targetX *
-                  0.1
-            ) * 0.15;
-
-          particle.vx += breathX;
-          particle.vy += breathY;
-
-          particle.vx *= 0.92;
-          particle.vy *= 0.92;
-        } else {
-          particle.vx *= 0.85;
-          particle.vy *= 0.85;
-
-          if (
-            particleTime > 4 &&
-            Math.abs(dx) < 0.01 &&
-            Math.abs(dy) < 0.01
-          ) {
-            particle.x =
-              particle.targetX;
-
-            particle.y =
-              particle.targetY;
-
-            particle.vx = 0;
-            particle.vy = 0;
-          }
-        }
-
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-
-        ctx.fillStyle = `rgba(
-          100,
-          255,
-          218,
-          ${particle.currentAlpha}
-        )`;
-
-        ctx.fillText(
-          particle.char,
-          particle.x,
-          particle.y
-        );
-      });
-    };
-
-    // --------------------------------------------------
-    // Mouse
-    // --------------------------------------------------
-    const handleMouseMove = (event) => {
-      const rect =
-        canvas.getBoundingClientRect();
-
-      mouseTargetRef.current.x =
-        event.clientX - rect.left;
-
-      mouseTargetRef.current.y =
-        event.clientY - rect.top;
-
-      mouseRef.current.active = true;
-    };
-
-    // --------------------------------------------------
-    // Touch
-    // --------------------------------------------------
-    const handleTouchMove = (event) => {
-      if (!event.touches.length) {
-        return;
-      }
-
-      const rect =
-        canvas.getBoundingClientRect();
-
-      const touch =
-        event.touches[0];
-
-      mouseTargetRef.current.x =
-        touch.clientX - rect.left;
-
-      mouseTargetRef.current.y =
-        touch.clientY - rect.top;
-
-      mouseRef.current.active = true;
-
-      if (event.cancelable) {
-        event.preventDefault();
+        ctx.fillStyle = `rgba(${p.color},${p.currentAlpha})`;
+        ctx.fillText(p.character, p.x, p.y);
       }
     };
 
-    // --------------------------------------------------
-    // Leave
-    // --------------------------------------------------
-    const handleLeave = () => {
+    const onMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouseTargetRef.current.x = e.clientX - rect.left;
+      mouseTargetRef.current.y = e.clientY - rect.top;
+      mouseRef.current.active = true;
+    };
+    const onMouseLeave = () => {
       mouseRef.current.active = false;
-
-      mouseTargetRef.current.x = -1000;
-      mouseTargetRef.current.y = -1000;
+      mouseTargetRef.current.x = -9999;
+      mouseTargetRef.current.y = -9999;
+    };
+    const onTouchMove = (e) => {
+      if (!e.touches.length) return;
+      const rect = canvas.getBoundingClientRect();
+      const t = e.touches[0];
+      mouseTargetRef.current.x = t.clientX - rect.left;
+      mouseTargetRef.current.y = t.clientY - rect.top;
+      mouseRef.current.active = true;
+      if (e.cancelable) e.preventDefault();
     };
 
-    canvas.addEventListener(
-      "mousemove",
-      handleMouseMove
-    );
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mouseleave", onMouseLeave);
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+    canvas.addEventListener("touchend", onMouseLeave);
 
-    canvas.addEventListener(
-      "mouseleave",
-      handleLeave
-    );
-
-    canvas.addEventListener(
-      "touchmove",
-      handleTouchMove,
-      { passive: false }
-    );
-
-    canvas.addEventListener(
-      "touchend",
-      handleLeave
-    );
-
-    draw();
+    render();
 
     return () => {
-      cancelAnimationFrame(animationId);
-
-      canvas.removeEventListener(
-        "mousemove",
-        handleMouseMove
-      );
-
-      canvas.removeEventListener(
-        "mouseleave",
-        handleLeave
-      );
-
-      canvas.removeEventListener(
-        "touchmove",
-        handleTouchMove
-      );
-
-      canvas.removeEventListener(
-        "touchend",
-        handleLeave
-      );
+      cancelAnimationFrame(frameId);
+      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseleave", onMouseLeave);
+      canvas.removeEventListener("touchmove", onTouchMove);
+      canvas.removeEventListener("touchend", onMouseLeave);
     };
-  }, [size, dataReady]);
+  }, [viewportWidth, ready]);
+
+  const { width, height } = getSize(viewportWidth);
 
   return (
     <canvas
       ref={canvasRef}
       className="simulation-container"
+      width={width}
+      height={height}
       style={{
-        width: `${size}px`,
-        height: `${size}px`,
+        width: `${width}px`,
+        height: `${height}px`,
+        display: "block",
         cursor: "crosshair",
         touchAction: "none",
+        background: "transparent",
       }}
+      aria-label="Animated ASCII portrait of Swarup Kar Chaudhuri"
     />
   );
 };
