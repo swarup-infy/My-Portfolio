@@ -25,13 +25,13 @@ const spotlightProjects = {
     image: "/assets/Logging-Monitoring.png",
   },
 
-  "Smart Water Quality Monitoring System": {
-    title: "smart water quality monitoring system",
-    desc: "Academic IoT project for monitoring water-quality parameters using sensors and a microcontroller-based system, with measurements designed for remote monitoring and practical environmental applications.",
+  "Modelling And Simulation of UPQC For Power Quality Improvement": {
+    title: "modelling and simulation of UPQC for power quality improvement",
+    desc: "Designed and simulated a Unified Power Quality Conditioner (UPQC) in MATLAB/Simulink to mitigate voltage and current disturbances in electrical distribution systems. The study evaluates voltage sag, swell, harmonics, power factor, and THD using coordinated series and shunt compensation.",
     techStack:
-      "Arduino UNO, NodeMCU ESP8266, pH Sensor, DS18B20, IoT Monitoring",
-    link: "https://github.com/swarup-infy",
-    image: "/assets/blob.png",
+      "MATLAB/Simulink, Power Electronics, UPQC, VSI, PWM, PI Control, p-q Theory, THD Analysis",
+    open: "/upqc-report.pdf",
+    image: "/assets/upqc.png",
   },
 };
 
@@ -51,11 +51,11 @@ const projects = {
     open: "https://ai-doc-assistant-nu.vercel.app/login",
   },
 
-  "Smart Water Quality Monitoring System": {
-    desc: "IoT-based academic project for monitoring water-quality parameters with sensors connected to a microcontroller and a remote monitoring workflow.",
+  "Modelling And Simulation of UPQC For Power Quality Improvement": {
+    desc: "MATLAB/Simulink-based modelling and simulation of a Unified Power Quality Conditioner for improving power quality by compensating voltage disturbances, current harmonics, reactive power, and load-side distortions.",
     techStack:
-      "Arduino, NodeMCU, pH Sensor, DS18B20, IoT",
-    link: "https://github.com/swarup-infy",
+      "MATLAB/Simulink, UPQC, Power Electronics, PWM, PI Control, p-q Theory, THD",
+    open: "/upqc-report.pdf",
   },
 };
 
